@@ -1,4 +1,6 @@
-# Scourgify
+# **Scourgify / 清理一新：AI 编程后的仓库收尾清理技能**
+
+这里的“清理一新”不是把工作区删到空，也不是为了追求一个表面干净的 `git status`。它指的是：在一次 AI 编程之后，把仓库里每个变更的归属、原因、下一步和验证证据清点清楚，让开发者或下一个 agent 能放心接手。
 
 Repo hygiene and handoff sync for AI coding sessions.
 
@@ -11,16 +13,6 @@ It gives an agent a conservative closeout workflow:
 - sync only docs whose truth actually changed
 - record verification honestly
 - leave a clear handoff instead of chasing an empty `git status`
-
-## Name And Chinese Localization
-
-`Scourgify` borrows the exact Harry Potter incantation for the Scouring Charm: `Scourgify`. In Simplified Chinese Harry Potter references, the incantation is listed as `清理一新`, with the charm name rendered as `除垢咒`.
-
-For this project, the grounded Chinese localization is:
-
-**Scourgify / 清理一新：AI 编程后的仓库收尾清理技能**
-
-这里的“清理一新”不是把工作区删到空，也不是为了追求一个表面干净的 `git status`。它指的是：在一次 AI 编程之后，把仓库里每个变更的归属、原因、下一步和验证证据清点清楚，让开发者或下一个 agent 能放心接手。
 
 This project only borrows the cleaning-spell metaphor. It is not affiliated with Harry Potter, Wizarding World, Warner Bros. Discovery, or J.K. Rowling.
 
