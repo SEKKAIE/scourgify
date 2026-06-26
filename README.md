@@ -12,6 +12,20 @@ It gives an agent a conservative closeout workflow:
 - record verification honestly
 - leave a clear handoff instead of chasing an empty `git status`
 
+## Name And Chinese Localization
+
+`Scourgify` borrows the exact Harry Potter incantation for the Scouring Charm: `Scourgify`. In Simplified Chinese Harry Potter references, the incantation is listed as `清理一新`, with the charm name rendered as `除垢咒`.
+
+For this project, the grounded Chinese localization is:
+
+**Scourgify / 清理一新：AI 编程后的仓库收尾清理技能**
+
+这里的“清理一新”不是把工作区删到空，也不是为了追求一个表面干净的 `git status`。它指的是：在一次 AI 编程之后，把仓库里每个变更的归属、原因、下一步和验证证据清点清楚，让开发者或下一个 agent 能放心接手。
+
+This project only borrows the cleaning-spell metaphor. It is not affiliated with Harry Potter, Wizarding World, Warner Bros. Discovery, or J.K. Rowling.
+
+Reference wording: [HarryPotter.com](https://www.harrypotter.com/features/every-spell-we-wish-we-could-use-for-spring-cleaning-season) uses `Scourgify` as a cleaning spell reference, while the fan-maintained Harry Potter Wiki lists the [Scouring Charm](https://harrypotter.fandom.com/wiki/Scouring_Charm) incantation as `Scourgify` and its [Simplified Chinese page](https://harrypotter.fandom.com/zh/wiki/%E9%99%A4%E5%9E%A2%E5%92%92) lists `清理一新` / `除垢咒`.
+
 ## Who It Is For
 
 Scourgify is useful for:
