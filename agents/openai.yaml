@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scourgify"
+  short_description: "Close out dirty repos safely"
+  default_prompt: "Use $scourgify to audit this repository, sync key docs, verify the work, and report remaining dirty files."
