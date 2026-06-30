@@ -1,6 +1,6 @@
 ---
 name: scourgify
-description: Scourgify closes out AI coding work by auditing dirty repository state, classifying changed files, syncing source-of-truth docs and handoff notes, recording verification, and preparing safe commit or PR boundaries. Use when the user says "Scourgify!", asks to clean up after Codex/Claude/vibe-coding sessions, reconcile multi-chat or multi-agent work, update repo hygiene, prepare a handoff, decide what to stage/ignore/remove, or verify docs and git status before calling work done.
+description: Scourgify closes out AI coding work by auditing dirty repository state, classifying changed files, syncing source-of-truth docs and handoff notes, recording verification, and preparing safe commit or PR boundaries. Use when the user says "Scourgify!", asks to clean up after Codex/Claude/vibe-coding sessions, reconcile multi-chat or multi-agent work, update repo hygiene, prepare a repo-scoped handoff, decide what to stage/ignore/remove, or verify docs and git status before calling work done.
 ---
 
 # Scourgify
@@ -79,6 +79,19 @@ When the user mentions multiple chats, forks, agents, or "sync all chats":
 3. Record latest verified behavior, commands run, skipped checks, and known risks.
 4. Put recurring rules in repo instructions, not only in the final chat response.
 5. Explicitly name any context that remains unsynced.
+
+## Repo-Scoped Handoff
+
+When the user's real need is to preserve work inside the right repository:
+
+1. Confirm the target repo path, branch, and current dirty state.
+2. Read repo-local instructions before writing handoff state.
+3. Say when Codex cannot truly merge or retarget an existing thread.
+4. Create or update a compact repo artifact only when it will help future work, such as `docs/CODEX_THREAD_CONTEXT.md`, `docs/HANDOFF.md`, `PROJECT.md`, or a repo-specific current-state doc.
+5. Include objective, decisions, verification evidence, dirty-file ownership, blockers, and the next concrete command or workflow.
+6. Re-read the handoff artifact after editing and report what remains outside the repo's source of truth.
+
+Do not treat the final chat response as durable handoff by itself. If future agents need it, put it in a repo file or an approved memory note.
 
 ## Final Response
 
