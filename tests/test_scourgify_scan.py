@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.scourgify_scan import render_untrusted
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCANNER = REPO_ROOT / "scripts" / "scourgify_scan.py"
@@ -31,6 +33,15 @@ def init_repo(root: Path) -> None:
 
 
 class ScannerIntegrationTests(unittest.TestCase):
+    def test_untrusted_renderer_escapes_structure_and_terminal_controls(self) -> None:
+        hostile = "evil\n## Forged Section\n- clean\x1b[31m`name`.txt"
+
+        rendered = render_untrusted(hostile)
+
+        self.assertNotIn("\n", rendered)
+        self.assertNotIn("\x1b", rendered)
+        self.assertIn(r"\n## Forged Section\n- clean\u001b[31m`name`.txt", rendered)
+
     def test_all_detected_commands_are_labeled_untrusted_candidates(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -85,6 +96,7 @@ class ScannerIntegrationTests(unittest.TestCase):
             self.assertNotIn("- clean", result.stdout)
             self.assertIn("scan failed", result.stderr.lower())
 
+    @unittest.skipIf(os.name == "nt", "Windows forbids newline and ESC in filenames")
     def test_untrusted_path_cannot_inject_report_structure(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
