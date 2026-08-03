@@ -1,0 +1,61 @@
+name: Bug report
+description: Report reproducible incorrect behavior in Scourgify.
+title: "Bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, private repository material, personal data, or unsanitized paths. Use a minimal sanitized example.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Repository scanner
+        - Closeout ledger validator
+        - Skill protocol
+        - Agent installation or integration
+        - Documentation
+        - CI or repository tooling
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and why it is incorrect.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Provide the command, sanitized inputs, and smallest sequence that reproduces the issue.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v1.1.0 or commit SHA
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Python version, operating system, Git version, and agent environment
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add sanitized logs or screenshots if they help explain the issue.

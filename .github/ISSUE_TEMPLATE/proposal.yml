@@ -1,0 +1,39 @@
+name: Proposal
+description: Suggest a focused protocol, tooling, or documentation improvement.
+title: "Proposal: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What closeout failure, ambiguity, or limitation should be addressed?
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: Describe the smallest useful change and how a developer or agent would experience it.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and tradeoffs
+      description: Include a sanitized example, prior art, compatibility concerns, or risks.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Closeout protocol
+        - Repository scanner
+        - Closeout ledger validator
+        - Agent integration
+        - Documentation
+        - CI or repository tooling
+    validations:
+      required: true
