@@ -12,16 +12,25 @@ import sys
 
 LEDGER_TEXT_FIELDS = {"path_id", "path", "owner", "reason", "next_action", "evidence"}
 PERMISSION_STATES = {"denied", "granted", "not-required", "required"}
+SCOPE_VALUES = {
+    "ignored": {"inventoried", "not-inventoried"},
+    "nested_gitlinks": {"not-inspected"},
+    "untracked": {"all"},
+}
 
 
 def read_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def snapshot_entries(value: object, label: str, errors: list[str]) -> tuple[str | None, list[dict]]:
+def snapshot_entries(
+    value: object,
+    label: str,
+    errors: list[str],
+) -> tuple[str | None, dict[str, str] | None, list[dict]]:
     if not isinstance(value, dict):
         errors.append(f"{label}: top level must be an object")
-        return None, []
+        return None, None, []
     if value.get("schema_version") != 1:
         errors.append(f"{label}: unsupported schema_version")
     repository = value.get("repository")
@@ -32,16 +41,38 @@ def snapshot_entries(value: object, label: str, errors: list[str]) -> tuple[str 
     entries = value.get("entries")
     if not isinstance(entries, list):
         errors.append(f"{label}: entries must be a list")
-        return root, []
+        entries = []
     entry_groups = [("entries", entries)]
     scope = value.get("scope")
-    ignored_scope = scope.get("ignored") if isinstance(scope, dict) else None
+    normalized_scope: dict[str, str] | None = None
+    if not isinstance(scope, dict):
+        errors.append(f"{label}: scope must be an object")
+    else:
+        normalized_scope = {}
+        missing_scope_fields = sorted(set(SCOPE_VALUES) - set(scope))
+        unexpected_scope_fields = sorted(set(scope) - set(SCOPE_VALUES))
+        if missing_scope_fields:
+            errors.append(f"{label}: scope missing fields: {missing_scope_fields}")
+        if unexpected_scope_fields:
+            errors.append(f"{label}: scope has unexpected fields: {unexpected_scope_fields}")
+        for field, allowed_values in SCOPE_VALUES.items():
+            field_value = scope.get(field)
+            if not isinstance(field_value, str) or field_value not in allowed_values:
+                errors.append(
+                    f"{label}: scope.{field} must be one of {sorted(allowed_values)}"
+                )
+            else:
+                normalized_scope[field] = field_value
+
+    ignored_scope = normalized_scope.get("ignored") if normalized_scope is not None else None
+    ignored_entries = value.get("ignored_entries")
+    if not isinstance(ignored_entries, list):
+        errors.append(f"{label}: ignored_entries must be a list")
+        ignored_entries = []
     if ignored_scope == "inventoried":
-        ignored_entries = value.get("ignored_entries")
-        if not isinstance(ignored_entries, list):
-            errors.append(f"{label}: ignored_entries must be a list when ignored paths are inventoried")
-            ignored_entries = []
         entry_groups.append(("ignored_entries", ignored_entries))
+    elif ignored_entries:
+        errors.append(f"{label}: ignored_entries must be empty when ignored paths are not inventoried")
     valid_entries: list[dict] = []
     for group_name, group in entry_groups:
         for number, entry in enumerate(group, start=1):
@@ -58,15 +89,17 @@ def snapshot_entries(value: object, label: str, errors: list[str]) -> tuple[str 
                 errors.append(f"{prefix} path must be non-empty text")
                 continue
             valid_entries.append(entry)
-    return root, valid_entries
+    return root, normalized_scope, valid_entries
 
 
 def validate(before: object, after: object, ledger: object) -> dict:
     errors: list[str] = []
-    before_root, before_entries = snapshot_entries(before, "before", errors)
-    after_root, after_entries = snapshot_entries(after, "after", errors)
+    before_root, before_scope, before_entries = snapshot_entries(before, "before", errors)
+    after_root, after_scope, after_entries = snapshot_entries(after, "after", errors)
     if before_root and after_root and before_root != after_root:
         errors.append("before and after repository roots differ")
+    if before_scope is not None and after_scope is not None and before_scope != after_scope:
+        errors.append("before and after scan scopes differ")
 
     if not isinstance(ledger, list):
         errors.append("ledger: top level must be a list")
@@ -151,6 +184,11 @@ def print_human(report: dict) -> None:
     print(f"- work ready: {'yes' if report['work_ready'] else 'no'}")
     for name, count in report["counts"].items():
         print(f"- {name}: {count}")
+    if report["outstanding_permission_path_ids"]:
+        print()
+        print("## Outstanding Permissions")
+        for path_id in report["outstanding_permission_path_ids"]:
+            print(f"- {json.dumps(path_id, ensure_ascii=True)}")
     if report["errors"]:
         print()
         print("## Blockers")

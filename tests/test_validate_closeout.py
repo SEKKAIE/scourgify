@@ -7,6 +7,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.validate_closeout import validate
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = REPO_ROOT / "scripts" / "validate_closeout.py"
@@ -21,8 +23,13 @@ def snapshot(root: str, entries: list[dict]) -> dict:
     return {
         "schema_version": 1,
         "repository": {"root": root},
-        "scope": {"ignored": "not-inventoried"},
+        "scope": {
+            "ignored": "not-inventoried",
+            "nested_gitlinks": "not-inspected",
+            "untracked": "all",
+        },
         "entries": entries,
+        "ignored_entries": [],
     }
 
 
@@ -43,6 +50,52 @@ def ledger_row(path_id: str, path: str) -> dict:
 
 
 class CloseoutValidatorTests(unittest.TestCase):
+    def test_before_and_after_scan_scopes_must_match(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            before_value = snapshot("/repo", [])
+            before_value["scope"]["ignored"] = "inventoried"
+            before_value["ignored_entries"] = [entry("scg-secret", ".env", "dangerous")]
+            after_value = snapshot("/repo", [])
+            before = root / "before.json"
+            after = root / "after.json"
+            ledger = root / "ledger.json"
+            write_json(before, before_value)
+            write_json(after, after_value)
+            write_json(ledger, [ledger_row("scg-secret", ".env")])
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(VALIDATOR),
+                    "--before",
+                    str(before),
+                    "--after",
+                    str(after),
+                    "--ledger",
+                    str(ledger),
+                    "--format",
+                    "json",
+                ],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            report = json.loads(result.stdout)
+            self.assertFalse(report["complete"])
+            self.assertIn("scope", "\n".join(report["errors"]).lower())
+
+    def test_ignored_entries_are_rejected_when_inventory_is_disabled(self) -> None:
+        before_value = snapshot("/repo", [])
+        before_value["ignored_entries"] = [entry("scg-secret", ".env", "dangerous")]
+        report = validate(before_value, snapshot("/repo", []), [])
+
+        self.assertFalse(report["complete"])
+        self.assertIn("must be empty", "\n".join(report["errors"]))
+
     def test_duplicate_ledger_identity_blocks_completion(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -225,6 +278,40 @@ class CloseoutValidatorTests(unittest.TestCase):
             self.assertTrue(report["complete"])
             self.assertFalse(report["work_ready"])
             self.assertEqual(report["outstanding_permission_path_ids"], ["scg-secret"])
+
+    def test_human_report_lists_outstanding_permission_path_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            before = root / "before.json"
+            after = root / "after.json"
+            ledger = root / "ledger.json"
+            write_json(before, snapshot("/repo", [entry("scg-secret", ".env", "dangerous")]))
+            write_json(after, snapshot("/repo", [entry("scg-secret", ".env", "dangerous")]))
+            row = ledger_row("scg-secret", ".env")
+            row["permission"] = "required"
+            write_json(ledger, [row])
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(VALIDATOR),
+                    "--before",
+                    str(before),
+                    "--after",
+                    str(after),
+                    "--ledger",
+                    str(ledger),
+                ],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("work ready: no", result.stdout)
+            self.assertIn("Outstanding Permissions", result.stdout)
+            self.assertIn("scg-secret", result.stdout)
 
     def test_real_before_and_after_snapshots_reconcile_every_path(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
