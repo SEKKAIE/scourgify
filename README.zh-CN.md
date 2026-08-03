@@ -4,111 +4,154 @@
 
 ### 除垢咒
 
-**AI 编程结束后，把脏乱工作区安全交接。**
-
-*在暂存、删除或移交之前，先弄清每一条变更。*
+**Scourgify 是一套面向 Codex、带授权边界的仓库收尾协议：它为脏乱的 Git 工作树建立快照，用五字段账本对账每一条范围内路径，并在宣布工作完成前机械验证交接。**
 
 [English](./README.md) · [简体中文](./README.zh-CN.md)
 
-[![Codex 已验证](https://img.shields.io/badge/Codex-已验证-111827?style=for-the-badge&logo=openai&logoColor=white)](https://learn.chatgpt.com/docs/build-skills)
-[![Claude Code 兼容](https://img.shields.io/badge/Claude%20Code-兼容-D97757?style=for-the-badge)](https://code.claude.com/docs/en/skills)
-[![Cursor 兼容](https://img.shields.io/badge/Cursor-兼容-111111?style=for-the-badge)](https://cursor.com/docs/skills)
-![协议](https://img.shields.io/badge/协议-保守收尾-2F6FED?style=for-the-badge)
-![扫描器](https://img.shields.io/badge/扫描器-只读-6D28D9?style=for-the-badge)
-![许可证](https://img.shields.io/badge/许可证-MIT-D4A017?style=for-the-badge)
-
-**已在 Codex 验证；按 Claude Code 与 Cursor 官方 Agent Skills 目录打包。**
+[![Codex skill](https://img.shields.io/badge/Codex-skill-111827?logo=openai&logoColor=white)](#快速开始)
+[![CI](https://github.com/SEKKAIE/scourgify/actions/workflows/ci.yml/badge.svg)](https://github.com/SEKKAIE/scourgify/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/SEKKAIE/scourgify?display_name=tag&sort=semver)](https://github.com/SEKKAIE/scourgify/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-D4A017.svg)](./LICENSE)
 
 </div>
 
 <p align="center">
-  <img src="./assets/scourgify-hero-v1.png" alt="一张严格四色像素画：魔法棒在黑暗中施展清洁魔法" width="100%">
+  <img src="./assets/scourgify-hero-v1.png" alt="一张严格四色像素画：魔法棒在黑暗中施展清洁魔法" width="860">
 </p>
 
----
+AI 编程很少在“代码跑通”时真正结束。它通常结束于这样的现场：源码改动旁边放着过期文档，生成文件混在真实工作里，却没有可靠记录说明什么该保留、验证、暂存、忽略，什么必须原样留下。
 
-AI 编程很少在“代码跑通”时真正结束。它通常结束于一个脏乱工作树：源码改动旁边放着过期文档，生成文件混在真实工作里，没有可靠记录说明什么该保留、验证、暂存、忽略，什么必须原样留下。
+Scourgify 不追求表面上空无一物的 `git status`。它让范围内的仓库状态变得可理解，保护无关用户工作，并区分“账本结构已经完整”和“工作确实可以继续”这两件事。
 
-Scourgify 不追求表面上空无一物的 `git status`。它要让仓库状态变得可理解：每一条变更都有归属、原因、下一步、证据和授权状态，并机械检查有没有漏项。
+## 快速开始
 
-## 它做什么
+### 1. 安装
 
-1. **先勘察仓库**：用一个只依赖 Python 标准库的只读扫描器建立事实底稿；运行仍需要 Python 3 与 Git。
-2. **先读本地规则**：理解仓库约定后，再判断每条路径意味着什么。
-3. **分类每一条非忽略脏路径**：不会把生成产物、秘密文件、对象边界和用户工作混为一谈；忽略项元数据必须显式选择才会盘点。
-4. **只同步已经改变的事实**：不会因为文档存在，就把所有文档重写一遍。
-5. **如实记录验证**：包括跳过了哪些检查，以及为什么跳过。
-6. **机械对账前后快照**：用结构化账本验证覆盖，再给开发者、下一个 agent、下一次提交或拉取请求留下有边界的交接。
+将经审阅的 `v1.1.0` 版本安装到 Codex skill 目录：
 
-## 收尾账本
-
-行动前，Scourgify 会让每一条变更回答同一组问题：
-
-| 字段 | 要回答的问题 | 常见取值 |
-| --- | --- | --- |
-| 归属 | 这是谁的工作？ | 当前任务、用户、另一个 agent、未知 |
-| 原因 | 为什么会变脏？ | 实现、文档同步、生成产物、验证证据 |
-| 下一步 | 接下来应该怎样处理？ | 保留、检查、忽略、移除、暂存、询问 |
-| 证据 | 什么支持这个判断？ | diff、测试、构建、截图、仓库规则 |
-| 授权 | 当前是否有权执行？ | `not-required`、`granted`、`required`、`denied` |
-
-扫描器只提供第一轮分类。最终行动前，agent 仍需检查仓库规则、diff 与当前任务上下文。
-
-## 适合什么时候用
-
-- AI 编程看似结束，但工作树还需要一次可信的收尾。
-- 代码、文档、生成产物和验证证据可能已经互相脱节。
-- 工作跨过多个聊天或 agent，需要在仓库里留下一个持久交接。
-- 你希望为下一次提交或拉取请求划出安全边界。
-
-## 不适合什么时候用
-
-- 你真正需要的是重构、格式化或通用代码清理，而不是任务收尾。
-- 你期待工具自动删除或暂存所有脏路径。
-- 当前任务工作与无关用户工作还无法区分。
-
-## 如何开始
-
-```text
-Scourgify!
+```bash
+git clone --branch v1.1.0 --depth 1 \
+  https://github.com/SEKKAIE/scourgify.git \
+  ~/.codex/skills/scourgify
 ```
 
-也可以明确说：
+Windows PowerShell 请运行：
 
-```text
-使用 $scourgify 审核这个仓库，同步关键文档，验证工作，并报告剩余脏文件。
+```powershell
+git clone --branch v1.1.0 --depth 1 `
+  https://github.com/SEKKAIE/scourgify.git `
+  "$env:USERPROFILE\.codex\skills\scourgify"
 ```
 
-skill 会先检查、再行动。破坏性清理、广泛暂存、提交与推送都不在默认边界内。
+内置扫描器与验证器需要 Python 3.10 或更高版本，以及 Git。
 
-## 它不会做什么
+### 2. 验证 CLI
 
-- 不会读取或打印秘密文件的内容。
-- 不会在脏仓库里使用宽泛的 `git add .`。
-- 不会静默还原、删除、覆盖、暂存或提交无关用户工作。
-- 除非真正更新了持久的事实来源，否则不会声称聊天或文档已经同步。
+```bash
+python3 ~/.codex/skills/scourgify/scripts/scourgify_scan.py --self-test
+```
 
-## 扫描器
+Windows PowerShell 请运行：
 
-在克隆后的 skill 目录中运行只读人类报告：
+```powershell
+py -3 "$env:USERPROFILE\.codex\skills\scourgify\scripts\scourgify_scan.py" --self-test
+```
+
+预期结果：
+
+```text
+self-test: ok
+```
+
+### 3. 调用
+
+新建一个 Codex 任务，输入：
+
+```text
+使用 $scourgify 收尾这个脏仓库，对账每一条范围内路径，并报告仍需授权的事项。
+```
+
+### 4. 确认结果
+
+第一次报告应当说明准确的仓库根目录、分支、上游、快照范围、候选文档与每一条范围内路径。它不应静默删除、还原、暂存、提交或推送任何内容。
+
+完成的收尾应给出经过验证的 before/after/expected/ledger 数量。`complete: yes` 表示账本结构对账成功；如果仍有操作需要授权，`work ready: no` 依然是诚实且有效的结果。
+
+## 工作方式
+
+1. **确认范围。** 明确仓库、分支、上游、对象边界与允许执行的操作。
+2. **冻结底稿。** 在目标仓库之外保存一份只依赖标准库、只读的 JSON 快照。
+3. **先读本地规则。** 理解适用的指令与持久状态，再解释路径含义。
+4. **建立账本。** 为每一条范围内路径记录归属、原因、下一步、证据与授权状态。
+5. **只同步已经改变的事实。** 仅更新确实发生漂移的最小持久文档表面。
+6. **安全验证。** 把发现的命令视为不可信候选项，并如实记录跳过的检查。
+7. **机械对账。** 用账本验证前后快照的并集。
+8. **完成交接。** 报告哪些工作已经就绪、哪些仍然脏，以及哪些准确的路径 ID 还需要决策。
+
+| 账本字段 | 要回答的问题 |
+| --- | --- |
+| `owner` | 这是谁的工作？ |
+| `reason` | 为什么路径会变脏或新出现？ |
+| `next_action` | 下一步有边界的处置是什么？ |
+| `evidence` | 什么测试、diff、规则或观察支持它？ |
+| `permission` | 当前操作是否获得授权？ |
+
+扫描器只提供第一轮分类。最终行动前，agent 仍需检查仓库规则、diff、证据与任务上下文。
+
+## 完整示例
+
+[`examples/worked-closeout`](./examples/worked-closeout/README.md) 包含一组人工合成的前后快照，以及一份完整的授权感知账本。
+
+在仓库根目录运行：
+
+```bash
+python3 scripts/validate_closeout.py \
+  --before examples/worked-closeout/before.json \
+  --after examples/worked-closeout/after.json \
+  --ledger examples/worked-closeout/ledger.json
+```
+
+预期摘要：before 有两条路径，after 有两条路径，并集包含三个稳定路径 ID；三个 ID 都恰好对应一条账本记录，验证器同时报告 `complete: yes` 与 `work ready: yes`。
+
+## 范围与局限
+
+- 确定性扫描器用于 Git 仓库。非 Git 回退只是一项单独限定范围的名称盘点，不能等同于经过验证的 Git 收尾。
+- “每一条范围内路径”是指前后快照中非忽略路径的并集；只有前后两份快照都显式使用 `--include-ignored`，才会额外纳入忽略项元数据。
+- 符号链接与 gitlink/子模块会被报告为对象边界；父仓库扫描不会检查其目标或嵌套内容。
+- 分类是启发式判断。任何类别都不会自动授予删除、忽略、暂存、提交或推送的权限。
+- 秘密文件内容不会被读取或复制到账本中，但快照仍包含仓库绝对路径、文件名等元数据；公开分享前，请清理私有路径与标识符。
+- 建议的测试、构建或 lint 命令，在检查仓库指令与命令的准确定义之前，都只是不可信候选项。
+- 有效账本只证明结构完成对账，不证明其中的证据真实，也不代表未决操作已经获得授权。
+
+## 兼容性与证据
+
+| 运行环境 | 与证据匹配的状态 |
+| --- | --- |
+| Codex | `v1.1.0` 的 skill 元数据与确定性 CLI 行为，已通过 skill 校验、扫描器自测、完整 unittest 套件和可运行示例验证。这不代表在每一个仓库上都能保证完全相同的模型行为。 |
+| Claude Code | 仅目录与格式兼容：仓库遵循其文档所述的个人 Agent Skills 目录与顶层 `SKILL.md` 格式；不声称完成 live-host 冒烟测试。详见 [Claude Code skills 文档](https://code.claude.com/docs/en/skills)。 |
+| Cursor | 仅目录与格式兼容：仓库遵循其文档所述的用户 Agent Skills 目录与顶层 `SKILL.md` 格式；不声称完成 live-host 冒烟测试。详见 [Cursor Agent Skills 文档](https://cursor.com/docs/skills)。 |
+
+## CLI 参考
+
+在克隆后的 skill 目录中运行人类可读报告：
 
 ```bash
 python3 scripts/scourgify_scan.py --cwd /path/to/repository
 ```
 
-把机器可读快照保存在目标仓库之外：
+把 JSON 快照保存在目标仓库之外：
 
 ```bash
 python3 scripts/scourgify_scan.py --cwd /path/to/repository --format json > /tmp/scourgify-before.json
 ```
 
-忽略项元数据必须显式选择：
+在不读取忽略文件内容的前提下，显式纳入忽略项元数据：
 
 ```bash
 python3 scripts/scourgify_scan.py --cwd /path/to/repository --include-ignored
 ```
 
-收尾后，对账前后快照与账本：
+验证完整的收尾包：
 
 ```bash
 python3 scripts/validate_closeout.py \
@@ -117,64 +160,26 @@ python3 scripts/validate_closeout.py \
   --ledger /tmp/scourgify-ledger.json
 ```
 
-运行自测：
+## 仓库结构
 
-```bash
-python3 scripts/scourgify_scan.py --self-test
-```
+- [`SKILL.md`](./SKILL.md)：授权感知型收尾协议
+- [`scripts/scourgify_scan.py`](./scripts/scourgify_scan.py)：只读的人类/JSON 仓库扫描器
+- [`scripts/validate_closeout.py`](./scripts/validate_closeout.py)：确定性的快照与账本对账器
+- [`agents/openai.yaml`](./agents/openai.yaml)：Codex skill 元数据
+- [`references/closeout-ledger.md`](./references/closeout-ledger.md)：账本契约与模板
+- [`references/repo-doc-patterns.md`](./references/repo-doc-patterns.md)：持久仓库文档的备用定位图
+- [`examples/worked-closeout`](./examples/worked-closeout/README.md)：可运行的合成示例包
+- [`evals/trigger-cases.json`](./evals/trigger-cases.json)：预期触发与不触发案例，不是行为基准测试结果
+- [`tests`](./tests) 与 [`ci.yml`](./.github/workflows/ci.yml)：真实 Git fixtures 与跨平台验证矩阵
 
-在 Windows 上，请用 `py -3` 替代 `python3`。
+## 贡献与安全
 
-## 包含内容
+本地验证命令与拉取请求要求见 [`CONTRIBUTING.md`](./CONTRIBUTING.md)。安全漏洞请按照 [`SECURITY.md`](./SECURITY.md) 中的流程私下报告；不要在公开 issue 中附上未清理的快照、账本、秘密信息或私有仓库材料。
 
-- `SKILL.md`：保守的仓库收尾协议
-- `scripts/scourgify_scan.py`：只依赖标准库的人类/JSON 仓库扫描器
-- `scripts/validate_closeout.py`：确定性的前后快照与账本对账器
-- `references/repo-doc-patterns.md`：事实来源文档的备用定位图
-- `references/closeout-ledger.md`：五字段账本契约与模板
-- `agents/openai.yaml`：Codex skill 元数据
-- `tests/` 与 `.github/workflows/ci.yml`：Linux、macOS、Windows 的真实 Git fixtures
+## 许可证
 
-## 安装
-
-### Codex——已验证
-
-使用 Skills installer：
-
-```bash
-npx skills@latest add SEKKAIE/scourgify -g -a codex --copy --full-depth
-```
-
-或者直接克隆：
-
-```bash
-git clone https://github.com/SEKKAIE/scourgify.git ~/.codex/skills/scourgify
-```
-
-安装后新建一个 Codex 聊天，让 skill 列表重新加载。
-
-### Claude Code——兼容 Agent Skill
-
-Claude Code 从 `~/.claude/skills/<skill-name>/SKILL.md` 加载个人 skill：
-
-```bash
-git clone https://github.com/SEKKAIE/scourgify.git ~/.claude/skills/scourgify
-```
-
-使用 `/scourgify` 调用。如果 Claude Code 启动时顶层 skills 目录还不存在，请重启一次，让它监听新目录。详见 [Claude Code 官方 skills 文档](https://code.claude.com/docs/en/skills)。
-
-### Cursor——兼容 Agent Skill
-
-Cursor 从 `~/.cursor/skills/` 或 `~/.agents/skills/` 加载用户 skill：
-
-```bash
-git clone https://github.com/SEKKAIE/scourgify.git ~/.cursor/skills/scourgify
-```
-
-使用 `/scourgify` 调用，或让 Agent 根据 description 自动选择。详见 [Cursor 官方 Agent Skills 文档](https://cursor.com/docs/skills)。
-
-本版本已在本机完成 Codex 调用冒烟测试。Claude Code 与 Cursor 的表述刻意保持更窄：仓库遵循两者官方 Agent Skills 格式与安装目录，但在对应应用不可用的环境里，不声称完成了 live host 冒烟测试。
+[MIT](./LICENSE)
 
 ## 名称说明
 
-本项目只借用了“清洁魔法”的比喻，与 Harry Potter、Wizarding World、Warner Bros. Discovery 或 J.K. Rowling 没有关联。[HarryPotter.com](https://www.harrypotter.com/features/every-spell-we-wish-we-could-use-for-spring-cleaning-season) 将 `Scourgify` 用作清洁魔法的名称；由粉丝维护的 Harry Potter Wiki 将 [Scouring Charm](https://harrypotter.fandom.com/wiki/Scouring_Charm) 的咒语列为 `Scourgify`，其[简体中文页面](https://harrypotter.fandom.com/zh/wiki/%E9%99%A4%E5%9E%A2%E5%92%92)则列出 `除垢咒` / `清理一新`。
+Scourgify 是一个因清洁隐喻而命名的非官方项目；不声称获得任何关联或背书。

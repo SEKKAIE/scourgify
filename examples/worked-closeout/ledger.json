@@ -1,0 +1,29 @@
+[
+  {
+    "evidence": "README setup and scope language match the reviewed v1.1.0 behavior",
+    "next_action": "keep the synchronized documentation in the release change group",
+    "owner": "current task",
+    "path": "README.md",
+    "path_id": "scg-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5",
+    "permission": "not-required",
+    "reason": "public setup and scope documentation was stale"
+  },
+  {
+    "evidence": "targeted behavior check and full repository test suite passed",
+    "next_action": "keep as reviewed task work eligible for the intended change group",
+    "owner": "current task",
+    "path": "src/app.py",
+    "path_id": "scg-04791d82dd15fdd480f084d7ef65a10789fa5012cb7935f76080763444d48a00",
+    "permission": "not-required",
+    "reason": "implements the requested feature"
+  },
+  {
+    "evidence": "handoff was reread and records current behavior, checks, and remaining risks",
+    "next_action": "keep as durable handoff documentation",
+    "owner": "current task",
+    "path": "docs/HANDOFF.md",
+    "path_id": "scg-711bab18dc013939fec7a1fb0ac87c69c4cb157fda80909aa689136e64d74837",
+    "permission": "not-required",
+    "reason": "created during closeout to preserve current repository truth"
+  }
+]

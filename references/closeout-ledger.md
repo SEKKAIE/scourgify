@@ -1,6 +1,6 @@
 # Closeout ledger
 
-Create a JSON array outside the target repository. Include exactly one row for every `path_id` in the union of the before and after snapshots.
+Create a JSON array outside the target repository. Include exactly one row for every in-scope `path_id` in the union of the before and after snapshots.
 
 ## Required fields
 
@@ -14,7 +14,7 @@ Create a JSON array outside the target repository. Include exactly one row for e
 | `evidence` | Cite a test, command, diff, repository rule, or metadata observation. |
 | `permission` | Use `not-required`, `granted`, `required`, or `denied`. |
 
-For dangerous paths, evidence may describe only path, Git status, object type, and ignore-policy metadata. Never copy file contents into the ledger.
+For dangerous paths, evidence may describe only path, Git status, object type, and ignore-policy metadata. Never copy file contents into the ledger. The ledger and snapshots still expose path metadata, so sanitize private paths and identifiers before sharing them.
 
 ## Example
 
@@ -51,3 +51,5 @@ Run the validator after capturing the final snapshot:
 ```
 
 `complete: yes` means the ledger is structurally complete and reconciled. `work ready: no` means the handoff is valid but one or more recorded actions still need permission.
+
+For a complete runnable packet with before and after snapshots, see the [worked closeout example](../examples/worked-closeout/README.md).

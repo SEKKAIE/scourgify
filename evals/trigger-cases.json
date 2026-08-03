@@ -5,6 +5,11 @@
     "reason": "Explicit invocation"
   },
   {
+    "query": "Use $scourgify to close out this dirty repository and list anything that still needs permission.",
+    "should_trigger": true,
+    "reason": "Explicit skill invocation for a permission-aware closeout"
+  },
+  {
     "query": "Close out this dirty repository after the Codex session and tell me what remains.",
     "should_trigger": true,
     "reason": "Post-coding repository closeout"
@@ -15,14 +20,29 @@
     "reason": "Multi-agent dirty-state reconciliation"
   },
   {
-    "query": "Before we call this finished, verify the repo state, docs, tests, and commit boundary.",
-    "should_trigger": true,
-    "reason": "Pre-completion repository verification"
-  },
-  {
-    "query": "Prepare a safe permission-aware ledger for every changed file.",
+    "query": "Prepare a safe permission-aware ledger for every in-scope changed file.",
     "should_trigger": true,
     "reason": "Explicit closeout ledger request"
+  },
+  {
+    "query": "Audit the dirty worktree, sync only stale docs, and give me a safe boundary for the next pull request.",
+    "should_trigger": true,
+    "reason": "Dirty-state reconciliation and pull-request handoff"
+  },
+  {
+    "query": "除垢咒！收尾这个脏仓库，并列出仍然需要我授权的路径。",
+    "should_trigger": true,
+    "reason": "Chinese explicit invocation and permission-aware closeout"
+  },
+  {
+    "query": "AI 编程已经结束，请对账当前任务、生成文件和用户原有改动，留下持久交接。",
+    "should_trigger": true,
+    "reason": "Chinese post-coding repository reconciliation"
+  },
+  {
+    "query": "三个 agent 改了同一个仓库，请整理范围内路径的归属、证据、下一步和授权状态。",
+    "should_trigger": true,
+    "reason": "Chinese multi-agent closeout ledger request"
   },
   {
     "query": "Format every Python file with Ruff.",
@@ -32,7 +52,7 @@
   {
     "query": "Refactor this parser into smaller classes.",
     "should_trigger": false,
-    "reason": "Implementation/refactoring request"
+    "reason": "Implementation or refactoring request"
   },
   {
     "query": "Delete every build directory you can find.",
@@ -47,7 +67,7 @@
   {
     "query": "Clean this repo, but I cannot tell which changes are mine and which belong to someone else.",
     "should_trigger": false,
-    "reason": "Ownership cannot be separated"
+    "reason": "Ownership cannot yet be separated"
   },
   {
     "query": "Run the linter and fix its warnings.",
@@ -57,6 +77,46 @@
   {
     "query": "Do a general code cleanup across the project.",
     "should_trigger": false,
-    "reason": "General cleanup, not closeout"
+    "reason": "General cleanup rather than closeout"
+  },
+  {
+    "query": "Run the tests and verify the implementation before saying it is done.",
+    "should_trigger": false,
+    "reason": "Routine verification without dirty-state reconciliation"
+  },
+  {
+    "query": "Review this pull request for bugs and coding-standard violations.",
+    "should_trigger": false,
+    "reason": "Ordinary code review"
+  },
+  {
+    "query": "Create a commit from the files I already selected.",
+    "should_trigger": false,
+    "reason": "Commit execution without repository closeout"
+  },
+  {
+    "query": "Explain why git status is dirty, but do not prepare a ledger or handoff.",
+    "should_trigger": false,
+    "reason": "Read-only diagnosis without closeout"
+  },
+  {
+    "query": "用 Ruff 格式化所有 Python 文件。",
+    "should_trigger": false,
+    "reason": "Chinese ordinary formatting request"
+  },
+  {
+    "query": "把这个解析器重构成几个更小的类。",
+    "should_trigger": false,
+    "reason": "Chinese implementation or refactoring request"
+  },
+  {
+    "query": "运行测试并修复所有失败项。",
+    "should_trigger": false,
+    "reason": "Chinese routine verification and implementation"
+  },
+  {
+    "query": "把所有修改 git add 后直接提交。",
+    "should_trigger": false,
+    "reason": "Chinese broad staging request without closeout"
   }
 ]

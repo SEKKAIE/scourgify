@@ -1,0 +1,8 @@
+# Scourgify Closeout Validation
+
+- complete: yes
+- work ready: yes
+- before: 2
+- after: 2
+- expected: 3
+- ledger: 3

@@ -1,15 +1,15 @@
 ---
 name: scourgify
-description: Scourgify closes out AI coding work by taking safe repository snapshots, classifying every changed path, reconciling multi-chat or multi-agent work, syncing durable docs, recording verification, and validating a bounded handoff. Use when the user says "Scourgify!", asks to close out a dirty repository after AI coding, reconcile work across chats or agents, prepare a repo-scoped handoff, decide what needs permission, or verify repository and documentation state before calling work complete. Do not invoke for ordinary formatting, refactoring, general cleanup, or a repository where current-task work cannot yet be separated from unrelated user work.
+description: Scourgify closes out AI coding work by taking safe repository snapshots, classifying every in-scope Git path captured before or after the closeout, reconciling multi-chat or multi-agent work, syncing durable docs, recording verification, and validating a permission-aware handoff. Use when the user says "Scourgify!" or "除垢咒", asks to close out a dirty repository after AI coding, reconcile work across chats or agents, prepare a safe commit or pull-request boundary, or build a ledger of changes and outstanding permissions. Do not invoke for ordinary formatting, refactoring, general cleanup, routine test or lint verification, ordinary code review, or a repository where current-task work cannot yet be separated from unrelated user work.
 ---
 
 # Scourgify
 
-Make the repository tell one true story: every changed path understood, durable truth current where needed, verification recorded, and unsafe actions left for explicit permission.
+Make the repository tell one true story: every in-scope path understood, durable truth current where needed, verification recorded, and unsafe actions left for explicit permission.
 
 ## Contract
 
-Clean does not mean empty `git status`. Clean means every initial and newly created path appears exactly once in a closeout ledger with:
+Clean does not mean empty `git status`. Clean means every path ID in the union of the before and after snapshots appears exactly once in a closeout ledger with:
 
 - `owner`
 - `reason`
@@ -21,10 +21,10 @@ Never silently revert, delete, overwrite, stage, commit, ignore, or hide unrelat
 
 ## Prerequisites
 
-Require Python 3 and Git. Resolve the directory containing this `SKILL.md` as `<skill-dir>`.
+Require Python 3.10 or later and Git. Resolve the directory containing this `SKILL.md` as `<skill-dir>`.
 
-- POSIX: use `python3` first, then `python` only if it is Python 3.
-- Windows: use `py -3` first, then `python` only if it is Python 3.
+- POSIX: use `python3` first, then `python` only if it is Python 3.10 or later.
+- Windows: use `py -3` first, then `python` only if it is Python 3.10 or later.
 - If no supported interpreter or Git exists, report the missing prerequisite and skip the scan honestly.
 
 ## Run Loop
@@ -32,6 +32,7 @@ Require Python 3 and Git. Resolve the directory containing this `SKILL.md` as `<
 1. **Confirm scope.**
    - Resolve and report the exact repository root, branch, and upstream.
    - Keep snapshots and the working ledger in an approved temporary/work directory outside the target repository so Scourgify does not add itself to the dirty set.
+   - Treat snapshots as private metadata: they contain the absolute repository root and path names even though they do not copy file contents. Sanitize them before public sharing.
    - For a non-Git fallback, first confirm an exact narrow directory. Reject a home directory, workspace root, filesystem root, or unresolved symlink boundary. Inventory names without following symlinks; obtain explicit permission before writing a handoff artifact.
 2. **Freeze the baseline.**
    - Run `<python3> <skill-dir>/scripts/scourgify_scan.py --cwd <repo> --format json` and save stdout as the before snapshot.
@@ -43,7 +44,7 @@ Require Python 3 and Git. Resolve the directory containing this `SKILL.md` as `<
    - If canonical docs remain unclear, read `references/repo-doc-patterns.md`.
 4. **Build the ledger.**
    - Start from `references/closeout-ledger.md`.
-   - Record owner, reason, next action, evidence, and permission for every baseline path.
+   - Record owner, reason, next action, evidence, and permission for every path ID in the union of the before and after snapshots.
    - Treat the scanner category as a first pass. Inspect only task-owned, non-dangerous diffs allowed by repository rules and user scope.
    - Treat symlinks and gitlinks/submodules as review boundaries. Do not follow them or claim nested state is understood without a separately scoped scan.
 5. **Sync only changed truth.**
@@ -85,6 +86,7 @@ Require Python 3 and Git. Resolve the directory containing this `SKILL.md` as `<
 - Never stage broad patterns such as `git add .` in a dirty repository.
 - Never claim ignored paths were checked unless `--include-ignored` was used.
 - Never claim submodule contents were checked from the parent repository scan.
+- Never describe snapshot metadata as anonymous or content-free; filenames and the absolute repository root may still be sensitive.
 - If a commit or push is requested, stage only the intended change group and confirm branch/upstream first.
 
 ## Durable Handoff

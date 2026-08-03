@@ -1,0 +1,49 @@
+{
+  "candidate_docs": [
+    "README.md"
+  ],
+  "entries": [
+    {
+      "category": "doc-sync",
+      "display_path": "\"README.md\"",
+      "display_source_path": null,
+      "next_action": "read for truth drift; update only if behavior or verification changed",
+      "object_type": "file",
+      "path": "README.md",
+      "path_id": "scg-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5",
+      "reason": "documentation path",
+      "source_path": null,
+      "status": " M"
+    },
+    {
+      "category": "unknown",
+      "display_path": "\"src/app.py\"",
+      "display_source_path": null,
+      "next_action": "inspect diff before deciding ownership",
+      "object_type": "file",
+      "path": "src/app.py",
+      "path_id": "scg-04791d82dd15fdd480f084d7ef65a10789fa5012cb7935f76080763444d48a00",
+      "reason": "no known pattern",
+      "source_path": null,
+      "status": " M"
+    }
+  ],
+  "ignored_entries": [],
+  "repository": {
+    "head": "1111111111111111111111111111111111111111",
+    "root": "/tmp/scourgify-worked-closeout",
+    "status_line": "## feature/closeout...origin/feature/closeout [ahead 1]",
+    "upstream": {
+      "ahead": 1,
+      "behind": 0,
+      "name": "origin/feature/closeout"
+    }
+  },
+  "schema_version": 1,
+  "scope": {
+    "ignored": "not-inventoried",
+    "nested_gitlinks": "not-inspected",
+    "untracked": "all"
+  },
+  "suggested_checks": []
+}
