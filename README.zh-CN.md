@@ -2,7 +2,7 @@
 
 # Scourgify
 
-### 清理一新
+### 除垢咒
 
 **AI 编程结束后，把脏乱工作区安全交接。**
 
@@ -129,4 +129,4 @@ git clone https://github.com/SEKKAIE/scourgify.git ~/.codex/skills/scourgify
 
 ## 名称说明
 
-本项目只借用了“清洁魔法”的比喻，与 Harry Potter、Wizarding World、Warner Bros. Discovery 或 J.K. Rowling 没有关联。[HarryPotter.com](https://www.harrypotter.com/features/every-spell-we-wish-we-could-use-for-spring-cleaning-season) 将 `Scourgify` 用作清洁魔法的名称；由粉丝维护的 Harry Potter Wiki 将 [Scouring Charm](https://harrypotter.fandom.com/wiki/Scouring_Charm) 的咒语列为 `Scourgify`，其[简体中文页面](https://harrypotter.fandom.com/zh/wiki/%E9%99%A4%E5%9E%A2%E5%92%92)则列出 `清理一新` / `除垢咒`。
+本项目只借用了“清洁魔法”的比喻，与 Harry Potter、Wizarding World、Warner Bros. Discovery 或 J.K. Rowling 没有关联。[HarryPotter.com](https://www.harrypotter.com/features/every-spell-we-wish-we-could-use-for-spring-cleaning-season) 将 `Scourgify` 用作清洁魔法的名称；由粉丝维护的 Harry Potter Wiki 将 [Scouring Charm](https://harrypotter.fandom.com/wiki/Scouring_Charm) 的咒语列为 `Scourgify`，其[简体中文页面](https://harrypotter.fandom.com/zh/wiki/%E9%99%A4%E5%9E%A2%E5%92%92)则列出 `除垢咒` / `清理一新`。
