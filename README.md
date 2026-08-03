@@ -1,130 +1,132 @@
-# **Scourgify / 清理一新：AI 编程后的仓库收尾清理技能**
+<div align="center">
 
-这里的“清理一新”不是把工作区删到空，也不是为了追求一个表面干净的 `git status`。它指的是：在一次 AI 编程之后，把仓库里每个变更的归属、原因、下一步和验证证据清点清楚，让开发者或下一个 agent 能放心接手。
+# Scourgify
 
-Repo hygiene and handoff sync for AI coding sessions.
+### 清理一新
 
-Scourgify is a Codex skill for the messy moment after coding work is "done": `git status` is dirty, docs may be stale, generated files are mixed with real work, and nobody is fully sure what should be staged, ignored, deleted, or left alone.
+**A conservative closeout for the messy moment after AI coding.**
 
-It gives an agent a conservative closeout workflow:
+*Understand every changed path before staging, deleting, or handing it off.*
 
-- classify every dirty path before acting
-- protect secrets and unrelated user work
-- sync only docs whose truth actually changed
-- record verification honestly
-- leave a clear handoff instead of chasing an empty `git status`
+[English](./README.md) · [简体中文](./README.zh-CN.md)
 
-This project only borrows the cleaning-spell metaphor. It is not affiliated with Harry Potter, Wizarding World, Warner Bros. Discovery, or J.K. Rowling.
+[![Codex](https://img.shields.io/badge/Codex-111827?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/codex/)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-D97757?style=for-the-badge)](https://code.claude.com/)
+[![Cursor](https://img.shields.io/badge/Cursor-111111?style=for-the-badge)](https://cursor.com/)
+![Protocol](https://img.shields.io/badge/Protocol-Conservative-2F6FED?style=for-the-badge)
+![Scanner](https://img.shields.io/badge/Scanner-Read--only-6D28D9?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-D4A017?style=for-the-badge)
 
-Reference wording: [HarryPotter.com](https://www.harrypotter.com/features/every-spell-we-wish-we-could-use-for-spring-cleaning-season) uses `Scourgify` as a cleaning spell reference, while the fan-maintained Harry Potter Wiki lists the [Scouring Charm](https://harrypotter.fandom.com/wiki/Scouring_Charm) incantation as `Scourgify` and its [Simplified Chinese page](https://harrypotter.fandom.com/zh/wiki/%E9%99%A4%E5%9E%A2%E5%92%92) lists `清理一新` / `除垢咒`.
+**Built for Codex, Claude Code, Cursor, and careful human handoffs.**
 
-## Who It Is For
+</div>
 
-Scourgify is useful for:
+<p align="center">
+  <img src="./assets/scourgify-hero-v1.png" alt="A four-colour pixel-art wand casting a cleaning spell into the dark" width="100%">
+</p>
 
-- developers using Codex, Claude Code, Cursor, or other coding agents
-- vibe coders who want a safer "clean this repo up" workflow
-- teams that hand work between multiple AI chats or agents
-- maintainers who want docs, tests, and git state to agree before a commit or PR
+---
 
-It is deliberately read-only by default. The bundled scanner reports what it sees; the agent still needs explicit user permission before destructive cleanup or staging unrelated work.
+AI coding rarely ends when the code starts working. It ends with a dirty worktree: source changes beside stale docs, generated files beside real work, and no reliable record of what should be kept, verified, staged, ignored, or left alone.
 
-## Install
+Scourgify does not chase a cosmetically empty `git status`. It makes repository state legible: every changed path gets an owner, a reason, a next action, and evidence.
 
-If your skill installer supports GitHub skill repos, install from this repository:
+## What it does
 
-```powershell
-npx skills@latest add SEKKAIE/scourgify -g -a codex --copy --full-depth
-```
+1. **Scouts the repository** with a dependency-free, read-only scanner.
+2. **Reads local rules first** before deciding what any path means.
+3. **Classifies every dirty path** without treating generated output, secrets, and user work as equivalent.
+4. **Syncs only changed truth** instead of rewriting every document that happens to exist.
+5. **Records verification honestly**, including checks that were skipped and why.
+6. **Leaves a bounded handoff** for the developer, next agent, commit, or pull request.
 
-You can also copy this repository into your Codex skills directory:
+## The closeout ledger
 
-```powershell
-git clone https://github.com/SEKKAIE/scourgify.git "$env:USERPROFILE\.codex\skills\scourgify"
-```
+Before action, Scourgify makes every changed path answer the same questions:
 
-Then start a new Codex chat so the skill list reloads.
+| Field | Question | Typical values |
+| --- | --- | --- |
+| Owner | Whose work is this? | Current task, user, another agent, unknown |
+| Reason | Why is it dirty? | Implementation, doc sync, generated output, evidence |
+| Next action | What should happen next? | Keep, inspect, ignore, remove, stage, ask |
+| Evidence | What supports that decision? | Diff, test, build, screenshot, repo rule |
+| Permission | Is the action authorized? | Safe now, needs review, needs user approval |
 
-## Use
+The scanner provides a first-pass category. The agent remains responsible for inspecting repository rules, diffs, and task context before acting.
 
-In a repository, ask:
+## Use it when
+
+- An AI coding session looks finished, but the worktree still needs a trustworthy closeout.
+- Code, documentation, generated output, and verification evidence may have drifted apart.
+- Work has moved across chats or agents and the repository needs one durable handoff.
+- You want a safe boundary for the next commit or pull request.
+
+## Do not use it when
+
+- You want a refactor, formatter, or general-purpose code cleanup rather than a closeout.
+- You expect every dirty path to be deleted or staged automatically.
+- You cannot distinguish current-task work from unrelated user work.
+
+## Start
 
 ```text
 Scourgify!
 ```
 
-Or:
+Or be explicit:
 
 ```text
 Use $scourgify to audit this repository, sync key docs, verify the work, and report remaining dirty files.
 ```
 
-The skill will run the scanner, read repo instructions, classify changes, update only the docs that need it, run relevant checks, and finish with a compact handoff.
+The skill will inspect first. Destructive cleanup, broad staging, commits, and pushes remain outside the default boundary.
+
+## What it will not do
+
+- It will not read or print secret-file contents.
+- It will not use a broad `git add .` in a dirty repository.
+- It will not silently revert, delete, overwrite, stage, or commit unrelated user work.
+- It will not claim chats or docs are synchronized unless a durable source of truth was actually updated.
 
 ## Scanner
 
-The scanner is a small dependency-free Python script:
+Run the read-only repository scan from the cloned skill directory:
 
-```powershell
-py -3 .\scripts\scourgify_scan.py --cwd C:\path\to\repo
+```bash
+python3 scripts/scourgify_scan.py --cwd /path/to/repository
 ```
-
-It reports:
-
-- branch and upstream state
-- candidate source-of-truth docs
-- dirty files with first-pass categories
-- reasons and suggested next actions
-- common test/build commands from project files
-- a closeout prompt for the agent
 
 Run its self-test with:
 
-```powershell
-py -3 .\scripts\scourgify_scan.py --self-test
+```bash
+python3 scripts/scourgify_scan.py --self-test
 ```
 
-## Categories
+On Windows, use `py -3` in place of `python3`.
 
-Scourgify classifies dirty files into practical buckets:
+## Included
 
-- `task-owned`: work from the current request
-- `doc-sync`: docs or handoff notes that may need truth updates
-- `generated-safe`: build/cache output
-- `verification-evidence`: screenshots, reports, snapshots, or test artifacts
-- `review-required`: lockfiles, migrations, destructive scripts, runtime-affecting changes
-- `dangerous`: secrets, env files, credentials, tokens, keys, personal data
-- `unrelated-user-work`: work that belongs to the user or another task
-- `unknown`: inspect before acting
+- `SKILL.md` — the conservative closeout protocol
+- `scripts/scourgify_scan.py` — dependency-free repository scanner and self-test
+- `references/repo-doc-patterns.md` — fallback map for source-of-truth documentation
+- `agents/openai.yaml` — Codex skill metadata
 
-The scanner gives a first pass. The agent must still inspect repo rules, diffs, and task context before making final decisions.
+## Install
 
-## Safety Model
+With the Skills installer:
 
-Scourgify is built around one rule:
-
-> Clean does not mean empty `git status`. Clean means every changed path has an owner, a reason, a next action, and evidence.
-
-The skill tells agents not to:
-
-- read or print secret file contents
-- run broad `git add .` in dirty repos
-- silently revert, delete, overwrite, stage, or commit unrelated user work
-- claim chats or docs are synced unless durable surfaces were actually updated
-
-## Repository Layout
-
-```text
-.
-|-- SKILL.md
-|-- agents/
-|   `-- openai.yaml
-|-- references/
-|   `-- repo-doc-patterns.md
-`-- scripts/
-    `-- scourgify_scan.py
+```bash
+npx skills@latest add SEKKAIE/scourgify -g -a codex --copy --full-depth
 ```
 
-## License
+Or clone it directly:
 
-MIT
+```bash
+git clone https://github.com/SEKKAIE/scourgify.git ~/.codex/skills/scourgify
+```
+
+Start a new Codex chat after installation so the skill list reloads.
+
+## Name note
+
+This project only borrows the cleaning-spell metaphor. It is not affiliated with Harry Potter, Wizarding World, Warner Bros. Discovery, or J.K. Rowling. [HarryPotter.com](https://www.harrypotter.com/features/every-spell-we-wish-we-could-use-for-spring-cleaning-season) uses `Scourgify` as a cleaning-spell reference; the fan-maintained Harry Potter Wiki lists the [Scouring Charm](https://harrypotter.fandom.com/wiki/Scouring_Charm) incantation as `Scourgify` and its [Simplified Chinese page](https://harrypotter.fandom.com/zh/wiki/%E9%99%A4%E5%9E%A2%E5%92%92) lists `清理一新` / `除垢咒`.
