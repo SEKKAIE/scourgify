@@ -6,7 +6,8 @@ Use this reference only when the repository does not clearly identify its canoni
 
 - `AGENTS.md`: agent-facing repo rules for Codex/OpenAI-style workflows.
 - `CLAUDE.md`: Claude Code project memory and instructions.
-- `.cursorrules`: Cursor-oriented repo guidance.
+- `.cursor/rules/*.mdc`: current Cursor project rules.
+- `.cursorrules`: legacy Cursor-oriented repo guidance.
 - `.github/copilot-instructions.md`: GitHub Copilot repository instructions.
 - `CONTRIBUTING.md`: contributor workflow, tests, PR rules.
 
@@ -18,7 +19,10 @@ Use this reference only when the repository does not clearly identify its canoni
 - `design.md`: UI/UX rules, visual system, interaction contracts.
 - `docs/PRODUCT_INTENT.md`: durable product spine and boundaries.
 - `docs/*PLAN*.md`: implementation plan or orchestration design.
-- `docs/*CURRENT*.md`, `docs/*SYNC*.md`, `docs/project-memory.md`: latest verified state and handoff notes.
+- `docs/HANDOFF.md`, `docs/CODEX_THREAD_CONTEXT.md`: repo-scoped continuation state.
+- `docs/*CURRENT*.md`, `docs/*SYNC*.md`, `docs/*ROADMAP*.md`, `docs/project-memory.md`: latest verified state and handoff notes; match durable-state names case-insensitively.
+
+Instruction files may be scoped below the repository root. For every dirty path, inspect applicable ancestors for nested instruction files. Do not treat a directory, symlink, or out-of-repository target as a readable document merely because its name matches.
 
 ## What To Update Where
 
@@ -34,7 +38,7 @@ Use this reference only when the repository does not clearly identify its canoni
 - Ready to keep: task-owned source changes with verification.
 - Docs synced: documentation edits that match source/runtime truth.
 - Evidence: screenshots, reports, fixtures, or logs that prove the handoff.
-- Generated cleanup: cache/build output that repo policy allows removing.
+- Generated cleanup: cache/build output that the user explicitly authorized removing; repository policy supports classification but does not grant authority.
 - Needs permission: secrets, migrations, lockfiles, destructive scripts, unrelated user work.
 - Unresolved: files whose owner, purpose, or safety is still unclear.
 

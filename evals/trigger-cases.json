@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Scourgify!",
+    "should_trigger": true,
+    "reason": "Explicit invocation"
+  },
+  {
+    "query": "Close out this dirty repository after the Codex session and tell me what remains.",
+    "should_trigger": true,
+    "reason": "Post-coding repository closeout"
+  },
+  {
+    "query": "Reconcile the work from three agents and leave a durable repo handoff.",
+    "should_trigger": true,
+    "reason": "Multi-agent dirty-state reconciliation"
+  },
+  {
+    "query": "Before we call this finished, verify the repo state, docs, tests, and commit boundary.",
+    "should_trigger": true,
+    "reason": "Pre-completion repository verification"
+  },
+  {
+    "query": "Prepare a safe permission-aware ledger for every changed file.",
+    "should_trigger": true,
+    "reason": "Explicit closeout ledger request"
+  },
+  {
+    "query": "Format every Python file with Ruff.",
+    "should_trigger": false,
+    "reason": "Ordinary formatting"
+  },
+  {
+    "query": "Refactor this parser into smaller classes.",
+    "should_trigger": false,
+    "reason": "Implementation/refactoring request"
+  },
+  {
+    "query": "Delete every build directory you can find.",
+    "should_trigger": false,
+    "reason": "Broad destructive cleanup"
+  },
+  {
+    "query": "Run git add . and commit everything.",
+    "should_trigger": false,
+    "reason": "Broad staging without a closeout audit"
+  },
+  {
+    "query": "Clean this repo, but I cannot tell which changes are mine and which belong to someone else.",
+    "should_trigger": false,
+    "reason": "Ownership cannot be separated"
+  },
+  {
+    "query": "Run the linter and fix its warnings.",
+    "should_trigger": false,
+    "reason": "Ordinary verification and implementation"
+  },
+  {
+    "query": "Do a general code cleanup across the project.",
+    "should_trigger": false,
+    "reason": "General cleanup, not closeout"
+  }
+]

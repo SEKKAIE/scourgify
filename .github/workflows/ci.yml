@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Configure Git fixtures
+        run: |
+          git config --global user.name "Scourgify CI"
+          git config --global user.email "scourgify@example.invalid"
+      - name: Compile scripts
+        run: python -m compileall -q scripts tests
+      - name: Run scanner self-test
+        run: python scripts/scourgify_scan.py --self-test
+      - name: Run integration tests
+        run: python -m unittest discover -s tests -v
